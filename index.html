@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    body {
+        font: 10px sans-serif;
+    }
+
+    text {
+        fill: #000;
+    }
+
+    path {
+        fill: none;
+        stroke-width: 1;
+    }
+
+    path.ohlc {
+        stroke: #000000;
+        stroke-width: 1;
+    }
+
+    path.ohlc.up {
+        stroke: #00AA00;
+    }
+
+    path.ohlc.down {
+        stroke: #FF0000;
+    }
+
+    .ma-0 path.line {
+        stroke: #1f77b4;
+    }
+
+    .ma-1 path.line {
+        stroke: #aec7e8;
+    }
+
+    path.volume {
+        fill: #EEEEEE;
+    }
+
+    .crosshair {
+        cursor: crosshair;
+    }
+
+    .crosshair path.wire {
+        stroke: #DDDDDD;
+        stroke-dasharray: 1, 1;
+    }
+
+    .crosshair .axisannotation path {
+        fill: #DDDDDD;
+    }
+
+</style>
+<body>
+<div id="div1"></div>
+numberOfTrades: <input type="text" id="numberOfTrades"/> <BR>
+numberOfActualTrades: <input type="text" id="numberOfActualTrades"/> <BR>
+positiveTrades: <input type="text" id="positiveTrades"/> <BR>
+</body>
+<script src="./js/d3.v4.min.js"></script>
+<script src="./js/techan.min.js"></script>
+<script>
+    var rData = [];//储存获取到的数据
+        var sendHttp = function http() {
+             var xmlhttp = new XMLHttpRequest();
+             xmlhttp.open("GET", "http://localhost:8080/*t=" + Math.random(), true);
+             xmlhttp.send();
+             setTimeout(sendHttp, 1000);
+             xmlhttp.onreadystatechange = function () {
+             if(xmlhttp.readyState == 4){    //4表示解析完毕
+             if(xmlhttp.status == 200){    //200为正常返回
+                 let receieveMessage = xmlhttp.responseText;//获取到响应数据
+                 let message = JSON.parse(receieveMessage);
+                 let getData = message.data;
+                 let numberOfTrades = message.numberOfTrades;
+                 let numberOfActualTrades = message.numberOfActualTrades;
+                 let positiveTrades = message.positiveTrades;
+                 if (getData != '') {
+                     let singleData = JSON.parse(getData);
+                     if(singleData.length>=1){
+                         for(let i=0;i<singleData.length;i++){
+                             rData.push(singleData[i]);
+                         }
+                     }
+                     let div = document.getElementById('div1');
+                     div.innerHTML = JSON.stringify(rData[rData.length-1]);
+                  }
+                     // Start off an initial set of data
+                 let Ntrades = document.getElementById('numberOfTrades');
+                 let Atrades = document.getElementById('numberOfActualTrades');
+                 let Ptrades = document.getElementById('positiveTrades');
+                 Ntrades.value = numberOfTrades;
+                 Atrades.value = numberOfActualTrades;
+                 Ptrades.value = positiveTrades;
+     }}};
+     }
+    sendHttp();
+
+</script>
